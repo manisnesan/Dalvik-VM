@@ -129,6 +129,14 @@ static void Dalvik_java_lang_System_arraycopy(const u4* args, JValue* pResult)
         (*copyFunc)((u1*)dstArray->contents + dstPos * width,
                 (const u1*)srcArray->contents + srcPos * width,
                 length * width);
+#ifdef WITH_TAINT_TRACKING
+	if (dstPos == 0 && (int)dstArray->length == length) {
+	    /* entire array replaced */
+	    dstArray->taint.tag = srcArray->taint.tag;
+	} else {
+	    dstArray->taint.tag |= srcArray->taint.tag;
+	}
+#endif
     } else {
         /*
          * Neither class is primitive.  See if elements in "src" are instances
@@ -150,6 +158,14 @@ static void Dalvik_java_lang_System_arraycopy(const u4* args, JValue* pResult)
             (*copyFunc)((u1*)dstArray->contents + dstPos * width,
                     (const u1*)srcArray->contents + srcPos * width,
                     length * width);
+#ifdef WITH_TAINT_TRACKING
+	    if (dstPos == 0 && (int)dstArray->length == length) {
+		/* entire array replaced */
+		dstArray->taint.tag = srcArray->taint.tag;
+	    } else {
+		dstArray->taint.tag |= srcArray->taint.tag;
+	    }
+#endif
             dvmWriteBarrierArray(dstArray, dstPos, dstPos+length);
         } else {
             /*
@@ -197,6 +213,14 @@ static void Dalvik_java_lang_System_arraycopy(const u4* args, JValue* pResult)
             (*copyFunc)((u1*)dstArray->contents + dstPos * width,
                     (const u1*)srcArray->contents + srcPos * width,
                     copyCount * width);
+#ifdef WITH_TAINT_TRACKING
+	    if (dstPos == 0 && (int)dstArray->length == length) {
+		/* entire array replaced */
+		dstArray->taint.tag = srcArray->taint.tag;
+	    } else {
+		dstArray->taint.tag |= srcArray->taint.tag;
+	    }
+#endif
             dvmWriteBarrierArray(dstArray, 0, copyCount);
             if (copyCount != length) {
                 dvmThrowExceptionFmt("Ljava/lang/ArrayStoreException;",

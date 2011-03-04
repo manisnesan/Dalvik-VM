@@ -89,6 +89,58 @@ MTERP_SIZEOF(sizeofGlobal_activeProfilers, gDvm.activeProfilers, 4)
 MTERP_OFFSET(offGlue_pc,                MterpGlue, pc, 0)
 MTERP_OFFSET(offGlue_fp,                MterpGlue, fp, 4)
 MTERP_OFFSET(offGlue_retval,            MterpGlue, retval, 8)
+/*-----------------------------------------------------------------*/
+#ifdef WITH_TAINT_TRACKING
+/* Adjustements required for InterpState.rtaint */
+MTERP_OFFSET(offGlue_rtaint,		MterpGlue, rtaint, 16)
+MTERP_OFFSET(offGlue_method,            MterpGlue, method, 20)
+MTERP_OFFSET(offGlue_methodClassDex,    MterpGlue, methodClassDex, 24)
+MTERP_OFFSET(offGlue_self,              MterpGlue, self, 28)
+MTERP_OFFSET(offGlue_bailPtr,           MterpGlue, bailPtr, 32)
+MTERP_OFFSET(offGlue_interpStackEnd,    MterpGlue, interpStackEnd, 36)
+MTERP_OFFSET(offGlue_pSelfSuspendCount, MterpGlue, pSelfSuspendCount, 40)
+MTERP_OFFSET(offGlue_cardTable,         MterpGlue, cardTable, 40)
+MTERP_OFFSET(offGlue_pDebuggerActive,   MterpGlue, pDebuggerActive, 44)
+MTERP_OFFSET(offGlue_pActiveProfilers,  MterpGlue, pActiveProfilers, 48)
+#if defined(WITH_DEBUGGER) && defined(WITH_PROFILER)
+MTERP_OFFSET(offGlue_pDebuggerActive,   MterpGlue, pDebuggerActive, 44)
+MTERP_OFFSET(offGlue_pActiveProfilers,  MterpGlue, pActiveProfilers, 48)
+MTERP_OFFSET(offGlue_entryPoint,        MterpGlue, entryPoint, 52)
+#if defined(WITH_JIT)
+MTERP_OFFSET(offGlue_pJitProfTable,     MterpGlue, pJitProfTable, 60)
+MTERP_OFFSET(offGlue_jitState,          MterpGlue, jitState, 64)
+MTERP_OFFSET(offGlue_jitResume,         MterpGlue, jitResume, 68)
+MTERP_OFFSET(offGlue_jitResumePC,       MterpGlue, jitResumePC, 72)
+#endif
+#elif defined(WITH_DEBUGGER)
+MTERP_OFFSET(offGlue_pDebuggerActive,   MterpGlue, pDebuggerActive, 44)
+MTERP_OFFSET(offGlue_entryPoint,        MterpGlue, entryPoint, 48)
+#if defined(WITH_JIT)
+MTERP_OFFSET(offGlue_pJitProfTable,     MterpGlue, pJitProfTable, 56)
+MTERP_OFFSET(offGlue_jitState,          MterpGlue, jitState, 60)
+MTERP_OFFSET(offGlue_jitResume,         MterpGlue, jitResume, 64)
+MTERP_OFFSET(offGlue_jitResumePC,       MterpGlue, jitResumePC, 68)
+#endif
+#elif defined(WITH_PROFILER)
+MTERP_OFFSET(offGlue_pActiveProfilers,  MterpGlue, pActiveProfilers, 44)
+MTERP_OFFSET(offGlue_entryPoint,        MterpGlue, entryPoint, 48)
+#if defined(WITH_JIT)
+MTERP_OFFSET(offGlue_pJitProfTable,     MterpGlue, pJitProfTable, 56)
+MTERP_OFFSET(offGlue_jitState,          MterpGlue, jitState, 60)
+MTERP_OFFSET(offGlue_jitResume,         MterpGlue, jitResume, 64)
+MTERP_OFFSET(offGlue_jitResumePC,       MterpGlue, jitResumePC, 68)
+#endif
+#else
+MTERP_OFFSET(offGlue_entryPoint,        MterpGlue, entryPoint, 44)
+#if defined(WITH_JIT)
+MTERP_OFFSET(offGlue_pJitProfTable,     MterpGlue, pJitProfTable, 52)
+MTERP_OFFSET(offGlue_jitState,          MterpGlue, jitState, 56)
+MTERP_OFFSET(offGlue_jitResume,         MterpGlue, jitResume, 60)
+MTERP_OFFSET(offGlue_jitResumePC,       MterpGlue, jitResumePC, 64)
+#endif
+#endif
+/*-----------------------------------------------------------------*/
+#else /* ndef WITH_TAINT_TRACKING */
 MTERP_OFFSET(offGlue_method,            MterpGlue, method, 16)
 MTERP_OFFSET(offGlue_methodClassDex,    MterpGlue, methodClassDex, 20)
 MTERP_OFFSET(offGlue_self,              MterpGlue, self, 24)
@@ -107,6 +159,7 @@ MTERP_OFFSET(offGlue_jitResumeDPC,      MterpGlue, jitResumeDPC, 72)
 MTERP_OFFSET(offGlue_jitThreshold,      MterpGlue, jitThreshold, 76)
 MTERP_OFFSET(offGlue_ppJitProfTable,    MterpGlue, ppJitProfTable, 80)
 MTERP_OFFSET(offGlue_icRechainCount,    MterpGlue, icRechainCount, 84)
+#endif
 #endif
 /* make sure all JValue union members are stored at the same offset */
 MTERP_OFFSET(offGlue_retval_z,          MterpGlue, retval.z, 8)

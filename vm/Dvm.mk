@@ -29,6 +29,17 @@ LOCAL_CFLAGS += -fstrict-aliasing -Wstrict-aliasing=2 -fno-align-jumps
 LOCAL_CFLAGS += -Wall -Wextra -Wno-unused-parameter
 LOCAL_CFLAGS += -DARCH_VARIANT=\"$(dvm_arch_variant)\"
 
+# Turn on Taint Tracking
+ifeq ($(WITH_TAINT_TRACKING),true)
+  LOCAL_CFLAGS += -DWITH_TAINT_TRACKING
+endif
+ifeq ($(TAINT_JNI_LOG),true)
+  LOCAL_CFLAGS += -DTAINT_JNI_LOG
+endif
+ifeq ($(WITH_TAINT_FAST),true)
+  LOCAL_CFLAGS += -DWITH_TAINT_FAST
+endif
+
 #
 # Optional features.  These may impact the size or performance of the VM.
 #
@@ -194,6 +205,12 @@ LOCAL_SRC_FILES := \
 	test/TestHash.c \
 	test/TestIndirectRefTable.c
 
+ifeq ($(WITH_TAINT_TRACKING), true)
+    LOCAL_SRC_FILES += native/dalvik_system_Taint.c
+    LOCAL_SRC_FILES += tprop/TaintProp.c
+    LOCAL_SRC_FILES += tprop/TaintPolicy.c
+endif
+
 WITH_COPYING_GC := $(strip $(WITH_COPYING_GC))
 
 ifeq ($(WITH_COPYING_GC),true)
@@ -250,6 +267,10 @@ LOCAL_C_INCLUDES += \
 	external/zlib \
 	$(KERNEL_HEADERS)
 
+# Taint tracking with file propagation
+ifeq ($(WITH_TAINT_TRACKING),true)
+    LOCAL_C_INCLUDES += dalvik/libattr
+endif
 
 ifeq ($(dvm_simulator),true)
   LOCAL_LDLIBS += -lpthread -ldl
@@ -333,4 +354,9 @@ endif
 
 ifeq ($(TEST_VM_IN_ECLAIR),true)
   LOCAL_CFLAGS += -DTEST_VM_IN_ECLAIR
+endif
+
+# Taint tracking with file propagation
+ifeq ($(WITH_TAINT_TRACKING),teue)
+    LOCAL_STATIC_LIBRARIES += libattr
 endif

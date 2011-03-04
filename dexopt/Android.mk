@@ -34,6 +34,15 @@ local_shared_libraries := \
 		libicuuc \
 		libicui18n
 
+# Turn on Taint Tracking
+ifeq ($(WITH_TAINT_TRACKING),true)
+  LOCAL_CFLAGS += -DWITH_TAINT_TRACKING
+endif
+ifeq ($(WITH_TAINT_ODEX),true)
+  LOCAL_CFLAGS += -DWITH_TAINT_ODEX
+endif
+
+
 include $(CLEAR_VARS)
 ifeq ($(TARGET_CPU_SMP),true)
     LOCAL_CFLAGS += -DANDROID_SMP=1
