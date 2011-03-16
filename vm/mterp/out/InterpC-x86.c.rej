@@ -1,0 +1,41 @@
+diff a/vm/mterp/out/InterpC-x86.c b/vm/mterp/out/InterpC-x86.c	(rejected hunks)
+@@ -1986,13 +2351,23 @@ GOTO_TARGET(invokeMethod, bool methodCallRange, const Method* _methodToCall,
+             methodToCall->clazz->descriptor, methodToCall->name,
+             methodToCall->shorty);
+ 
++#ifdef WITH_TAINT_TRACKING
++        newFp = (u4*) SAVEAREA_FROM_FP(fp) - 
++	    ((methodToCall->registersSize << 1) + 1);
++#else
+         newFp = (u4*) SAVEAREA_FROM_FP(fp) - methodToCall->registersSize;
++#endif
+         newSaveArea = SAVEAREA_FROM_FP(newFp);
+ 
+         /* verify that we have enough space */
+         if (true) {
+             u1* bottom;
++#ifdef WITH_TAINT_TRACKING
++            bottom = (u1*) newSaveArea - 
++		(methodToCall->outsSize * sizeof(u4) + 4);
++#else
+             bottom = (u1*) newSaveArea - methodToCall->outsSize * sizeof(u4);
++#endif
+             if (bottom < self->interpStackEnd) {
+                 /* stack overflow */
+                 LOGV("Stack overflow on method call (start=%p end=%p newBot=%p size=%d '%s')\n",
+@@ -2079,6 +2461,15 @@ GOTO_TARGET(invokeMethod, bool methodCallRange, const Method* _methodToCall,
+              * to the method arguments.
+              */
+             (*methodToCall->nativeFunc)(newFp, &retval, methodToCall, self);
++#ifdef WITH_TAINT_TRACKING
++	    /* Get the return taint if available */
++	    {
++		/* use same logic as above to calculate count */
++		u4 count = (methodCallRange) ? vsrc1 : vsrc1 >> 4;
++		u4* outs = OUTS_FROM_FP(fp, count);
++		SET_RETURN_TAINT(outs[count]);
++	    }
++#endif
+ 
+ #if (INTERP_TYPE == INTERP_DBG) && defined(WITH_DEBUGGER)
+             if (gDvm.debuggerActive) {

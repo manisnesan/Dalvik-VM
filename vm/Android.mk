@@ -56,7 +56,6 @@ include $(BUILD_SHARED_LIBRARY)
 # If WITH_JIT is configured, build multiple versions of libdvm.so to facilitate
 # correctness/performance bugs triage
 ifeq ($(WITH_JIT),true)
-
     # Derivation #1
     # Enable assert and JIT tuning
     include $(LOCAL_PATH)/ReconfigureDvm.mk
@@ -117,6 +116,11 @@ ifeq ($(WITH_HOST_DALVIK),true)
     # time. When building this target as a regular static library, certain
     # dependencies like expat are not found by the linker.
     LOCAL_WHOLE_STATIC_LIBRARIES += libexpat libcutils libdex liblog libnativehelper libutils libz
+# Taint tracking with file propagation
+#ifeq ($(WITH_TAINT_TRACKING),true)
+#    LOCAL_WHOLE_STATIC_LIBRARIES += libattr
+#endif
+
 
     # The libffi from the source tree should never be used by host builds.
     # The recommendation is that host builds should always either

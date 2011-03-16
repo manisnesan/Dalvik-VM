@@ -1,0 +1,12 @@
+diff a/vm/Jni.c b/vm/Jni.c	(rejected hunks)
+@@ -423,6 +427,10 @@ void dvmJniShutdown(void)
+ #else
+     dvmClearReferenceTable(&gDvm.jniGlobalRefTable);
+ #endif
++
++#ifdef WITH_TAINT_TRACKING
++    dvmTaintPropJniShutdown();
++#endif
+ }
+ 
+ 

@@ -1,0 +1,12 @@
+diff a/vm/mterp/c/opcommon.c b/vm/mterp/c/opcommon.c	(rejected hunks)
+@@ -641,6 +749,10 @@ GOTO_TARGET_DECL(exceptionThrown);
+         ILOGV("+ SPUT '%s'=0x%08llx",                                       \
+             sfield->field.name, (u8)GET_REGISTER##_regsize(vdst));          \
+         UPDATE_FIELD_PUT(&sfield->field);                                   \
++/* ifdef WITH_TAINT_TRACKING */                                             \
++	dvmSetStaticFieldTaint##_ftype(sfield,                              \
++		GET_REGISTER_TAINT##_regsize(vdst));                        \
++/* endif */                                                                 \
+     }                                                                       \
+     FINISH(2);
+ 

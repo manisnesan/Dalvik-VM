@@ -1,0 +1,60 @@
+diff a/vm/mterp/common/asm-constants.h b/vm/mterp/common/asm-constants.h	(rejected hunks)
+@@ -134,6 +183,8 @@ MTERP_OFFSET(offGlue_jitResume,         MterpGlue, jitResume, 56)
+ MTERP_OFFSET(offGlue_jitResumePC,       MterpGlue, jitResumePC, 60)
+ #endif
+ #endif
++#endif /* ndef WITH_TAINT_TRACKING */
++/*-----------------------------------------------------------------*/
+ /* make sure all JValue union members are stored at the same offset */
+ MTERP_OFFSET(offGlue_retval_z,          MterpGlue, retval.z, 8)
+ MTERP_OFFSET(offGlue_retval_i,          MterpGlue, retval.i, 8)
+@@ -177,10 +228,20 @@ MTERP_OFFSET(offInstField_byteOffset,   InstField, byteOffset, 16)
+ #endif
+ 
+ /* StaticField fields */
++#ifdef WITH_TAINT_TRACKING
+ #ifdef PROFILE_FIELD_ACCESS
+ MTERP_OFFSET(offStaticField_value,      StaticField, value, 24)
++MTERP_OFFSET(offStaticField_taint,		StaticField, taint, 32)
+ #else
+ MTERP_OFFSET(offStaticField_value,      StaticField, value, 16)
++MTERP_OFFSET(offStaticField_taint,		StaticField, taint, 24)
++#endif
++#else
++#ifdef PROFILE_FIELD_ACCESS
++MTERP_OFFSET(offStaticField_value,      StaticField, value, 24)
++#else
++MTERP_OFFSET(offStaticField_value,      StaticField, value, 16)
++#endif
+ #endif
+ 
+ /* Method fields */
+@@ -213,11 +274,28 @@ MTERP_OFFSET(offObject_clazz,           Object, clazz, 0)
+ 
+ /* ArrayObject fields */
+ MTERP_OFFSET(offArrayObject_length,     ArrayObject, length, 8)
++#ifdef WITH_TAINT_TRACKING
++MTERP_OFFSET(offArrayObject_taint,	ArrayObject, taint, 12)
++#endif
++
++#ifdef WITH_TAINT_TRACKING
++/*-----------------------------------------------------------------*/
++/* The extra 4 bytes for the taint tag makes these the same */
++#ifdef MTERP_NO_UNALIGN_64
++MTERP_OFFSET(offArrayObject_contents,   ArrayObject, contents, 16)
++#else
++MTERP_OFFSET(offArrayObject_contents,   ArrayObject, contents, 16)
++#endif
++/*-----------------------------------------------------------------*/
++#else /* ndef WITH_TAINT_TRACKING */
++/*-----------------------------------------------------------------*/
+ #ifdef MTERP_NO_UNALIGN_64
+ MTERP_OFFSET(offArrayObject_contents,   ArrayObject, contents, 16)
+ #else
+ MTERP_OFFSET(offArrayObject_contents,   ArrayObject, contents, 12)
+ #endif
++/*-----------------------------------------------------------------*/
++#endif /* WITH_TAINT_TRACKING */
+ 
+ /* ClassObject fields */
+ MTERP_OFFSET(offClassObject_descriptor, ClassObject, descriptor, 24)

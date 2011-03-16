@@ -1,0 +1,21 @@
+diff a/dexopt/OptMain.c b/dexopt/OptMain.c	(rejected hunks)
+@@ -124,7 +124,11 @@ static int extractAndProcessZip(int zipFd, int cacheFd,
+      * Prep the VM and perform the optimization.
+      */
+     DexClassVerifyMode verifyMode = VERIFY_MODE_ALL;
++#if defined(WITH_TAINT_TRACKING) && !defined(WITH_TAINT_ODEX)
++    DexOptimizerMode dexOptMode = OPTIMIZE_MODE_NONE;
++#else
+     DexOptimizerMode dexOptMode = OPTIMIZE_MODE_VERIFIED;
++#endif
+     int dexoptFlags = 0;        /* bit flags, from enum DexoptFlags */
+     if (dexoptFlagStr[0] != '\0') {
+         const char* opc;
+@@ -408,6 +421,7 @@ static int fromDex(int argc, char* const argv[])
+     } else {
+         dexOptMode = OPTIMIZE_MODE_NONE;
+     }
++#endif
+     if ((flags & DEXOPT_GEN_REGISTER_MAP) != 0) {
+         dexoptFlags |= DEXOPT_GEN_REGISTER_MAPS;
+     }

@@ -1,0 +1,53 @@
+diff a/vm/mterp/out/InterpC-allstubs.c b/vm/mterp/out/InterpC-allstubs.c	(rejected hunks)
+@@ -2070,6 +2454,11 @@ HANDLE_OPCODE(OP_APUT_OBJECT /*vAA, vBB, vCC*/)
+         ILOGV("+ APUT[%d]=0x%08x", GET_REGISTER(vsrc2), GET_REGISTER(vdst));
+         ((u4*) arrayObj->contents)[GET_REGISTER(vsrc2)] =
+             GET_REGISTER(vdst);
++/* ifdef WITH_TAINT_TRACKING */
++	SET_ARRAY_TAINT(arrayObj,
++		(GET_ARRAY_TAINT(arrayObj) |
++		 GET_REGISTER_TAINT(vdst)) );
++/* endif */
+     }
+     FINISH(2);
+ OP_END
+@@ -3831,13 +4319,23 @@ GOTO_TARGET(invokeMethod, bool methodCallRange, const Method* _methodToCall,
+             methodToCall->clazz->descriptor, methodToCall->name,
+             methodToCall->shorty);
+ 
++#ifdef WITH_TAINT_TRACKING
++        newFp = (u4*) SAVEAREA_FROM_FP(fp) - 
++	    ((methodToCall->registersSize << 1) + 1);
++#else
+         newFp = (u4*) SAVEAREA_FROM_FP(fp) - methodToCall->registersSize;
++#endif
+         newSaveArea = SAVEAREA_FROM_FP(newFp);
+ 
+         /* verify that we have enough space */
+         if (true) {
+             u1* bottom;
++#ifdef WITH_TAINT_TRACKING
++            bottom = (u1*) newSaveArea - 
++		(methodToCall->outsSize * sizeof(u4) + 4);
++#else
+             bottom = (u1*) newSaveArea - methodToCall->outsSize * sizeof(u4);
++#endif
+             if (bottom < self->interpStackEnd) {
+                 /* stack overflow */
+                 LOGV("Stack overflow on method call (start=%p end=%p newBot=%p size=%d '%s')\n",
+@@ -3924,6 +4429,15 @@ GOTO_TARGET(invokeMethod, bool methodCallRange, const Method* _methodToCall,
+              * to the method arguments.
+              */
+             (*methodToCall->nativeFunc)(newFp, &retval, methodToCall, self);
++#ifdef WITH_TAINT_TRACKING
++	    /* Get the return taint if available */
++	    {
++		/* use same logic as above to calculate count */
++		u4 count = (methodCallRange) ? vsrc1 : vsrc1 >> 4;
++		u4* outs = OUTS_FROM_FP(fp, count);
++		SET_RETURN_TAINT(outs[count]);
++	    }
++#endif
+ 
+ #if (INTERP_TYPE == INTERP_DBG) && defined(WITH_DEBUGGER)
+             if (gDvm.debuggerActive) {

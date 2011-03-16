@@ -140,6 +140,7 @@ bail:
  */
 int main(int argc, char* const argv[])
 {
+    
     JavaVM* vm = NULL;
     JNIEnv* env = NULL;
     JavaVMInitArgs initArgs;

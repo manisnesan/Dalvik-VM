@@ -965,6 +965,7 @@ int dvmCheckJit(const u2* pc, Thread* self, InterpState* interpState,
 JitEntry *dvmFindJitEntry(const u2* pc)
 {
     int idx = dvmJitHash(pc);
+	LOGW("Runnging JIT HEre \n");
 
     /* Expect a high hit rate on 1st shot */
     if (gDvmJit.pJitEntryTable[idx].dPC == pc)
@@ -1244,6 +1245,7 @@ bool dvmJitResizeJitTable( unsigned int size )
 
     LOGI("Jit: resizing JitTable from %d to %d", gDvmJit.jitTableSize, size);
 
+LOGE("ANATARA : resizing the JITTABLE >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>");
     newMask = size - 1;
 
     if (size <= gDvmJit.jitTableSize) {

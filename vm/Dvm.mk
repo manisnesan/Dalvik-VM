@@ -357,6 +357,6 @@ ifeq ($(TEST_VM_IN_ECLAIR),true)
 endif
 
 # Taint tracking with file propagation
-ifeq ($(WITH_TAINT_TRACKING),teue)
-    LOCAL_STATIC_LIBRARIES += libattr
-endif
+#ifeq ($(WITH_TAINT_TRACKING),true)
+#    LOCAL_STATIC_LIBRARIES += libattr
+#endif

@@ -138,6 +138,7 @@ bool dvmCompilerSetupCodeCache(void)
     extern void dmvCompilerTemplateEnd(void);
     int fd;
 
+	LOGE("ANATARA Initialized JIT Code cache >>>>>>>>>>>>>>>>>");
     /* Allocate the code cache */
     fd = ashmem_create_region("dalvik-jit-code-cache", gDvmJit.codeCacheSize);
     if (fd < 0) {

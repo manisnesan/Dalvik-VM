@@ -1,0 +1,9 @@
+diff a/vm/interp/Interp.c b/vm/interp/Interp.c	(rejected hunks)
+@@ -998,4 +1022,7 @@ void dvmInterpret(Thread* self, const Method* method, JValue* pResult)
+     }
+ 
+     *pResult = interpState.retval;
++#ifdef WITH_TAINT_TRACKING
++    *rtaint = interpState.rtaint.tag;
++#endif
+ }
